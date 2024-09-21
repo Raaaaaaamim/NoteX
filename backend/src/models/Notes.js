@@ -10,11 +10,7 @@ const noteSchema = new Schema(
       type: String,
       required: [true, "Content is required "],
     },
-    category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
-      default: null,
-    },
+
     author: {
       type: String,
       ref: "User",
