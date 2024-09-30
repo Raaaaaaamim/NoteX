@@ -6,10 +6,16 @@ export class CustomError extends Error {
     this.status = status;
   }
 }
+
 export function createTokenAndSendCookie(id, res) {
   const token = jwt.sign({ id: id }, process.env.JWT_SECRET, {
-    expiresIn: "1h",
+    expiresIn: "15d",
   });
 
-  res.cookie("token", token);
+  // Set cookie with appropriate flags
+  res.cookie("token", token, {
+    httpOnly: true,
+    sameSite: "lax",
+    maxAge: 1000 * 60 * 60 * 24 * 15,
+  });
 }

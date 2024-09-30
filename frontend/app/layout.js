@@ -1,6 +1,4 @@
 // RootLayout.jsx
-import Navbar from "@/components/Navbar.jsx";
-import SideBar from "@/components/SideBar.jsx";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "./theme-provider.jsx";
@@ -23,8 +21,6 @@ export default function RootLayout({ children }) {
           enableSystem={true} // Boolean value
           disableTransitionOnChange={true} // Boolean value
         >
-          <Navbar />
-          <SideBar />
           {children}
         </ThemeProvider>
       </body>

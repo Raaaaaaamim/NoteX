@@ -1,7 +1,7 @@
 import { config } from "dotenv";
+import { app } from "./src/app.js";
 import connectDB from "./src/database/connectDB.js";
 
-import { app } from "./src/app.js";
 config();
 connectDB();
 app.listen(process.env.PORT, () => {

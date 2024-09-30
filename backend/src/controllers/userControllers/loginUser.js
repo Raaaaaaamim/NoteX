@@ -14,7 +14,6 @@ const loginUser = async (req, res, next) => {
     if (user.password !== password) {
       return next(new CustomError("Password is incorrect", 404));
     }
-
     createTokenAndSendCookie(user.id, res);
     user.password = null;
     res.status(200).json(user);
