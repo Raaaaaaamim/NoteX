@@ -8,11 +8,12 @@ import userRouter from "./routes/user.js";
 export const app = express();
 app.use(
   cors({
-    origin: "http://localhost:3000", // Allow only localhost:5000
+    origin: "http://localhost:3000", // Corrected the origin URLs
     credentials: true, // Allow credentials (cookies)
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE", // Allowed methods
   })
 );
+
 app.use(cookieParser());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true }));

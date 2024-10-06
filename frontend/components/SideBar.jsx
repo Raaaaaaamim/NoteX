@@ -1,7 +1,33 @@
+"use client";
 import { cn } from "@/lib/utils.js";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import SideBtn from "./sidebar-button.jsx";
 
 const SideBar = ({ className }) => {
+  const [groups, setGroups] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      const { data } = await axios.get(
+        "http://localhost:5000/api/notes/groups/all",
+        {
+          withCredentials: true,
+        }
+      );
+
+      setGroups(data);
+
+      setLoading(false);
+      console.log(data);
+    };
+
+    fetchData();
+  }, []);
+  console.log(loading, groups);
+
   return (
     <div
       className={cn(
@@ -9,9 +35,17 @@ const SideBar = ({ className }) => {
         className
       )}
     >
-      <SideBtn text={"Notes"} itemsCount={7} />
-      <SideBtn text={" Tasks"} itemsCount={8} />
-      <SideBtn text={"Anime's"} itemsCount={93} />
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        groups?.map((group) => (
+          <SideBtn
+            key={group.name}
+            text={group.name}
+            itemsCount={group.itemsCount}
+          />
+        ))
+      )}
     </div>
   );
 };

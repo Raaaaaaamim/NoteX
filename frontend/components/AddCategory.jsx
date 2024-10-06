@@ -10,17 +10,26 @@ import {
 } from "@/components/ui/select";
 import { MdOutlineFileDownloadDone } from "react-icons/md";
 
+import { groupState } from "@/app/states/groupState.js";
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa6";
+import { useRecoilState } from "recoil";
 import { Button } from "./ui/button.jsx";
 import { Input } from "./ui/input.jsx";
 const AddCategory = () => {
   const [addCategory, setAddCategory] = useState(true);
+  const [group, setGroup] = useRecoilState(groupState);
+  console.log(group);
+
   return (
     <div className=" flex ml-4 justify-start w-full items-center  ">
       {addCategory ? (
         <>
-          <Select className=" ">
+          <Select
+            onValueChange={(value) => setGroup(value)}
+            className=" "
+            defaultValue={group}
+          >
             <SelectTrigger className="w-[75%] lg:w-[85%] ">
               <SelectValue placeholder="Select a fruit" />
             </SelectTrigger>
@@ -53,7 +62,7 @@ const AddCategory = () => {
           <Button
             onClick={() => setAddCategory(!addCategory)}
             size="icon"
-            className=" ml-4  "
+            className=" ml-4"
           >
             <MdOutlineFileDownloadDone size={20} />
           </Button>

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Command,
   CommandEmpty,
@@ -12,11 +14,15 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { CgProfile } from "react-icons/cg";
 import { RiMenu4Fill } from "react-icons/ri";
 
+import { groupState } from "@/app/states/groupState.js";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import axios from "axios";
+import { useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { FaRegNoteSticky } from "react-icons/fa6";
 import { GoTasklist } from "react-icons/go";
 import { VscSettings } from "react-icons/vsc";
+import { useRecoilState } from "recoil";
 import AddCategory from "./AddCategory.jsx";
 import SideBar from "./SideBar.jsx";
 import { ModeToggle } from "./mode-toggle.jsx";
@@ -25,6 +31,27 @@ import { Button } from "./ui/button.jsx";
 import { Input } from "./ui/input.jsx";
 import { Textarea } from "./ui/textarea.jsx";
 const Navbar = () => {
+  const [title, setTitle] = useState("");
+  const [note, setNote] = useState("");
+  const [group, setGroup] = useRecoilState(groupState);
+  const addNote = async () => {
+    try {
+      const { data } = await axios.post(
+        "http://localhost:5000/api/notes/new",
+        {
+          title,
+          content: note,
+          group,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(data);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
   return (
     <div className=" fixed bg-background z-10 border-b-[1px] border-border w-[100%]  h-[10vh] flex justify-between items-center ">
       <div className="  lg:flex flex-[2] justify-center items-center ">
@@ -109,13 +136,19 @@ const Navbar = () => {
               <Input
                 className=" text-xl font-[600] border-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0  "
                 placeholder="Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
               />
               <Textarea
                 className=" text-sm  border-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0  "
                 placeholder="Note"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
               />
               <AddCategory />
-              <Button className=" ml-4 ">Add Note</Button>
+              <Button onClick={addNote} className=" ml-4 ">
+                Add Note
+              </Button>
             </DialogContent>
           </Dialog>
         </div>
