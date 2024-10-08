@@ -7,6 +7,7 @@ import getAllNotes from "../controllers/notesControllers/getAllNotes.js";
 import getGroupNotes from "../controllers/notesControllers/getGroupNotes.js";
 import getNote from "../controllers/notesControllers/getNote.js";
 import newNote from "../controllers/notesControllers/newNote.js";
+import searchNotes from "../controllers/notesControllers/searchNotes.js";
 import protectedRoute from "../middlewares/protectedRoute.js";
 const router = Router();
 router.post("/new", protectedRoute, newNote);
@@ -14,6 +15,8 @@ router.post("/delete-many", protectedRoute, deleteMultipleNotes);
 
 router.delete("/:id", protectedRoute, deleteNote);
 router.get("/all", protectedRoute, getAllNotes);
+router.get("/search/:query", protectedRoute, searchNotes);
+
 router.get("/groups/all", protectedRoute, getAllGroups);
 router.delete("/groups/:group", protectedRoute, deleteGroup);
 

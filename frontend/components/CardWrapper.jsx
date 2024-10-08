@@ -37,6 +37,7 @@ const CardWrapper = () => {
               notes.map((note) => (
                 <>
                   <NoteCard
+                    date={note.createdAt}
                     title={note.title}
                     category={note.group}
                     note={note.content}

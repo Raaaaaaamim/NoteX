@@ -19,3 +19,15 @@ export function createTokenAndSendCookie(id, res) {
     maxAge: 1000 * 60 * 60 * 24 * 15,
   });
 }
+export const getHighlightedText = (text, query) => {
+  const regex = new RegExp(`(.{0,30})(${query})(.{0,30})`, "i");
+  const match = text.match(regex);
+
+  if (match) {
+    return {
+      matched: match[2],
+      context: [match[1], match[2], match[3]],
+    };
+  }
+  return null;
+};

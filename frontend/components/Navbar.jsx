@@ -1,29 +1,18 @@
 "use client";
 
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from "@/components/ui/command";
-
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { CgProfile } from "react-icons/cg";
 import { RiMenu4Fill } from "react-icons/ri";
 
 import { groupState } from "@/app/states/groupState.js";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import axios from "axios";
+import { SearchIcon } from "lucide-react";
+import Link from "next/link.js";
 import { useState } from "react";
 import { CiSearch } from "react-icons/ci";
-import { FaRegNoteSticky } from "react-icons/fa6";
-import { GoTasklist } from "react-icons/go";
-import { VscSettings } from "react-icons/vsc";
 import { useRecoilState } from "recoil";
 import AddCategory from "./AddCategory.jsx";
+import SearchCard from "./SearchCard.jsx";
 import SideBar from "./SideBar.jsx";
 import { ModeToggle } from "./mode-toggle.jsx";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar.jsx";
@@ -32,6 +21,9 @@ import { Input } from "./ui/input.jsx";
 import { Textarea } from "./ui/textarea.jsx";
 const Navbar = () => {
   const [title, setTitle] = useState("");
+  const [search, setSearch] = useState("");
+  const [searchLoading, setSearchLoading] = useState(false);
+
   const [note, setNote] = useState("");
   const [group, setGroup] = useRecoilState(groupState);
   const addNote = async () => {
@@ -52,6 +44,38 @@ const Navbar = () => {
       console.log(err.message);
     }
   };
+  let timeoutId;
+
+  const searchInNotesDebounce = (e) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+
+    timeoutId = setTimeout(() => {
+      const searchNotes = async () => {
+        try {
+          setSearchLoading(true);
+          const { data } = await axios.get(
+            `http://localhost:5000/api/notes/search/${e.target.value}`,
+
+            {
+              withCredentials: true,
+            }
+          );
+          setSearchLoading(false);
+
+          console.log(data);
+          setSearch(data);
+        } catch (err) {
+          console.log(err.message);
+        }
+      };
+
+      searchNotes();
+    }, 500);
+  };
+
   return (
     <div className=" fixed bg-background z-10 border-b-[1px] border-border w-[100%]  h-[10vh] flex justify-between items-center ">
       <div className="  lg:flex flex-[2] justify-center items-center ">
@@ -84,7 +108,12 @@ const Navbar = () => {
         </Sheet>
       </div>
       <div className=" flex justify-between flex-[8] items-center  ">
-        <h1 className=" flex-[2] hidden lg:flex ">Your Notes</h1>
+        <Link
+          href="/"
+          className=" cursor-pointer font-semibold flex-[2] hidden lg:flex "
+        >
+          Your Notes
+        </Link>
         <div className=" flex gap-4 justify-end flex-[8]  items-center ">
           <Dialog className="  ">
             <DialogTrigger asChild>
@@ -92,37 +121,22 @@ const Navbar = () => {
                 <CiSearch size={20} />
               </Button>
             </DialogTrigger>
-            <DialogContent className=" w-[350px] rounded-[1rem] lg:w-full ">
-              <Command>
-                <CommandInput placeholder="Type a command or search..." />
-                <CommandList>
-                  <CommandEmpty>No results found.</CommandEmpty>
-                  <CommandGroup heading="Suggestions">
-                    <CommandItem className=" flex justify-start items-center gap-1 ">
-                      <FaRegNoteSticky />
-                      <span>Notes</span>
-                    </CommandItem>
-                    <CommandItem className=" flex justify-start items-center gap-1 ">
-                      <GoTasklist />
-
-                      <span>Tasks</span>
-                    </CommandItem>
-                  </CommandGroup>
-                  <CommandSeparator />
-                  <CommandGroup heading="Settings">
-                    <CommandItem className=" flex justify-start items-center gap-1 ">
-                      <CgProfile />
-
-                      <span>Profile</span>
-                    </CommandItem>
-                    <CommandItem className=" flex justify-start items-center gap-1 ">
-                      <VscSettings />
-
-                      <span>Settings</span>
-                    </CommandItem>
-                  </CommandGroup>
-                </CommandList>
-              </Command>
+            <DialogContent className=" w-[350px] flex justify-center items-center flex-col rounded-[1rem] lg:w-full ">
+              <div className=" gap-0 w-full flex justify-center items-center  ">
+                <SearchIcon className=" scale-[0.75] text-xl text-foreground" />
+                <Input
+                  className=" h-4 pt-4  text-sm px-1 py-0 font-[600] border-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0  "
+                  placeholder="Type here to Search..."
+                  onChange={searchInNotesDebounce}
+                />
+              </div>
+              <div className=" w-full h-[1px] bg-border "></div>
+              <SearchCard
+                title={["Hello,", "i am ", "Tahmid Ramim!"]}
+                content={
+                  "I don't know what to do now but i do know know onw thing and that is going there isn't gonna solve anything  and i don't wanna be with you"
+                }
+              />
             </DialogContent>
           </Dialog>
 
