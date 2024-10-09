@@ -1,4 +1,5 @@
 // RootLayout.jsx
+import { Toaster } from "@/components/ui/toaster.jsx";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "./theme-provider.jsx";
@@ -22,6 +23,7 @@ export default function RootLayout({ children }) {
           disableTransitionOnChange={true} // Boolean value
         >
           {children}
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

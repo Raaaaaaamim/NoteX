@@ -41,6 +41,7 @@ const page = ({ params: { group } }) => {
                 <>
                   <NoteCard
                     key={note._id}
+                    id={note._id}
                     date={note.createdAt}
                     title={note.title}
                     category={note.group}

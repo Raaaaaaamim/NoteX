@@ -1,32 +1,43 @@
 "use client";
+import { reloadState } from "@/app/(states)/reloadState.js";
+import { useToast } from "@/hooks/use-toast.js";
 import { cn } from "@/lib/utils.js";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useRecoilValue } from "recoil";
 import SideBtn from "./sidebar-button.jsx";
 
 const SideBar = ({ className }) => {
   const [groups, setGroups] = useState(null);
   const [loading, setLoading] = useState(false);
-
+  const { toast } = useToast();
+  const reload = useRecoilValue(reloadState);
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
-      const { data } = await axios.get(
-        "http://localhost:5000/api/notes/groups/all",
-        {
-          withCredentials: true,
-        }
-      );
+      try {
+        setLoading(true);
+        const { data } = await axios.get(
+          "http://localhost:5000/api/notes/groups/all",
+          {
+            withCredentials: true,
+          }
+        );
 
-      setGroups(data);
+        setGroups(data);
 
-      setLoading(false);
-      console.log(data);
+        setLoading(false);
+      } catch (err) {
+        setLoading(false);
+        toast({
+          title: "Error while fetching groups",
+          description: err.message,
+        });
+        console.log(err.message);
+      }
     };
 
     fetchData();
-  }, []);
-  console.log(loading, groups);
+  }, [reload]);
 
   return (
     <div

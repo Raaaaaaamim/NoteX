@@ -3,10 +3,14 @@
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { RiMenu4Fill } from "react-icons/ri";
 
-import { groupState } from "@/app/states/groupState.js";
+import { groupState } from "@/app/(states)/groupState.js";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useToast } from "@/hooks/use-toast";
+
+import { notesState } from "@/app/(states)/notesState.js";
+import { reloadState } from "@/app/(states)/reloadState.js";
 import axios from "axios";
-import { SearchIcon } from "lucide-react";
+import { Loader, SearchIcon } from "lucide-react";
 import Link from "next/link.js";
 import { useState } from "react";
 import { CiSearch } from "react-icons/ci";
@@ -20,14 +24,28 @@ import { Button } from "./ui/button.jsx";
 import { Input } from "./ui/input.jsx";
 import { Textarea } from "./ui/textarea.jsx";
 const Navbar = () => {
-  const [title, setTitle] = useState("");
-  const [search, setSearch] = useState("");
+  const [title, setTitle] = useState(null);
+  const [search, setSearch] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [reload, setReload] = useRecoilState(reloadState);
+  const [Notes, setNotes] = useRecoilState(notesState);
+
+  const { toast } = useToast();
   const [searchLoading, setSearchLoading] = useState(false);
 
-  const [note, setNote] = useState("");
+  const [note, setNote] = useState(null);
   const [group, setGroup] = useRecoilState(groupState);
   const addNote = async () => {
+    if (!group || !title) {
+      toast({
+        title: "An error occurred   ",
+        description: "Group and Title is required  ",
+      });
+      return;
+    }
     try {
+      setLoading(true);
       const { data } = await axios.post(
         "http://localhost:5000/api/notes/new",
         {
@@ -39,14 +57,26 @@ const Navbar = () => {
           withCredentials: true,
         }
       );
-      console.log(data);
+      setReload(!reload);
+      setNotes([...Notes, data]);
+      setLoading(false);
+
+      toast({
+        title: "Note Added",
+        description: "Note added successfully",
+      });
     } catch (err) {
+      setLoading(false);
       console.log(err.message);
     }
   };
   let timeoutId;
 
   const searchInNotesDebounce = (e) => {
+    if (e.target.value.length === 0) {
+      setSearch(null);
+      return;
+    }
     if (timeoutId) {
       clearTimeout(timeoutId);
       timeoutId = null;
@@ -68,6 +98,7 @@ const Navbar = () => {
           console.log(data);
           setSearch(data);
         } catch (err) {
+          setSearchLoading(false);
           console.log(err.message);
         }
       };
@@ -131,12 +162,24 @@ const Navbar = () => {
                 />
               </div>
               <div className=" w-full h-[1px] bg-border "></div>
-              <SearchCard
-                title={["Hello,", "i am ", "Tahmid Ramim!"]}
-                content={
-                  "I don't know what to do now but i do know know onw thing and that is going there isn't gonna solve anything  and i don't wanna be with you"
-                }
-              />
+              {searchLoading ? (
+                <Loader />
+              ) : (
+                search &&
+                search.map(({ _id, matches: { title, content } }) => {
+                  const modifiedTitle = title ? title.context : null;
+                  const modifiedContent = content ? content.context : null;
+
+                  return (
+                    <SearchCard
+                      title={modifiedTitle}
+                      key={_id}
+                      id={_id}
+                      content={modifiedContent}
+                    />
+                  );
+                })
+              )}
             </DialogContent>
           </Dialog>
 
@@ -160,7 +203,12 @@ const Navbar = () => {
                 onChange={(e) => setNote(e.target.value)}
               />
               <AddCategory />
-              <Button onClick={addNote} className=" ml-4 ">
+              <Button
+                isLoading={loading}
+                disabled={loading}
+                onClick={addNote}
+                className=" ml-4 "
+              >
                 Add Note
               </Button>
             </DialogContent>
