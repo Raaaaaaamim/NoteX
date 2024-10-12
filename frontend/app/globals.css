@@ -5,6 +5,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* For WebKit browsers (Chrome, Safari) */
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+/* For Firefox */
+.scrollbar-hidden {
+  scrollbar-width: none;
+}
 
 @layer base {
   :root {

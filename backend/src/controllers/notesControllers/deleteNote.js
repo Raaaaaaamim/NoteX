@@ -10,10 +10,14 @@ const deleteNote = async (req, res, next) => {
     if (!isAuthor) {
       return next(new CustomError("Not authorized", 401));
     }
-    await Notes.findByIdAndDelete(id);
+    const deletedNote = await Notes.findByIdAndDelete(id);
     res
       .status(200)
-      .json({ success: true, message: "Note deleted successfully" });
+      .json({
+        success: true,
+        message: "Note deleted successfully",
+        id: deletedNote._id,
+      });
   } catch (err) {
     next(new CustomError(err.message));
   }

@@ -7,6 +7,7 @@ import { groupState } from "@/app/(states)/groupState.js";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
 
+import { groupNotes } from "@/app/(states)/groupNotes.js";
 import { notesState } from "@/app/(states)/notesState.js";
 import { reloadState } from "@/app/(states)/reloadState.js";
 import axios from "axios";
@@ -27,13 +28,17 @@ const Navbar = () => {
   const [title, setTitle] = useState(null);
   const [search, setSearch] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  const [groupNotesData, setGroupNotesData] = useRecoilState(groupNotes);
   const [reload, setReload] = useRecoilState(reloadState);
   const [Notes, setNotes] = useRecoilState(notesState);
 
   const { toast } = useToast();
   const [searchLoading, setSearchLoading] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  const handleLinkClick = () => {
+    setIsDialogOpen(false); // This will close the dialog
+  };
   const [note, setNote] = useState(null);
   const [group, setGroup] = useRecoilState(groupState);
   const addNote = async () => {
@@ -58,7 +63,10 @@ const Navbar = () => {
         }
       );
       setReload(!reload);
-      setNotes([...Notes, data]);
+      setNotes([data, ...Notes]);
+      if (groupNotesData) {
+        setGroupNotesData([data, ...groupNotesData]);
+      }
       setLoading(false);
 
       toast({
@@ -146,13 +154,17 @@ const Navbar = () => {
           Your Notes
         </Link>
         <div className=" flex gap-4 justify-end flex-[8]  items-center ">
-          <Dialog className="  ">
+          <Dialog
+            open={isDialogOpen}
+            onOpenChange={setIsDialogOpen}
+            className="  "
+          >
             <DialogTrigger asChild>
               <Button variant="outline" size="icon">
                 <CiSearch size={20} />
               </Button>
             </DialogTrigger>
-            <DialogContent className=" w-[350px] flex justify-center items-center flex-col rounded-[1rem] lg:w-full ">
+            <DialogContent className=" w-[350px] max-h-[90vh] overflow-auto flex justify-center items-center flex-col rounded-[1rem] lg:w-full ">
               <div className=" gap-0 w-full flex justify-center items-center  ">
                 <SearchIcon className=" scale-[0.75] text-xl text-foreground" />
                 <Input
@@ -162,24 +174,33 @@ const Navbar = () => {
                 />
               </div>
               <div className=" w-full h-[1px] bg-border "></div>
-              {searchLoading ? (
-                <Loader />
-              ) : (
-                search &&
-                search.map(({ _id, matches: { title, content } }) => {
-                  const modifiedTitle = title ? title.context : null;
-                  const modifiedContent = content ? content.context : null;
+              <div className="  justify-center items-center overflow-auto max-h-[90%] w-full flex flex-col gap-2 ">
+                {searchLoading ? (
+                  <Loader />
+                ) : (
+                  search &&
+                  search.map(({ _id, matches: { title, content } }, i) => {
+                    const modifiedTitle = title ? title.context : null;
+                    const modifiedContent = content ? content.context : null;
 
-                  return (
-                    <SearchCard
-                      title={modifiedTitle}
-                      key={_id}
-                      id={_id}
-                      content={modifiedContent}
-                    />
-                  );
-                })
-              )}
+                    return (
+                      <Link
+                        onClick={handleLinkClick}
+                        href={`/notes/${_id}`}
+                        className={` ${i === 0 && "mt-28"} w-full `}
+                      >
+                        <SearchCard
+                          index={i}
+                          title={modifiedTitle}
+                          key={_id}
+                          id={_id}
+                          content={modifiedContent}
+                        />
+                      </Link>
+                    );
+                  })
+                )}
+              </div>
             </DialogContent>
           </Dialog>
 

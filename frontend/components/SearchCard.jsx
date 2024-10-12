@@ -1,10 +1,9 @@
-import Link from "next/link.js";
 import { Card } from "./ui/card.jsx";
 
-const SearchCard = ({ title, content, id }) => {
+const SearchCard = ({ title, content, id, index }) => {
   return (
     <>
-      <Link href={`/notes/${id}`} className=" w-full ">
+      
         <Card className=" w-full rounded-sm  cursor-pointer h-[20%] flex justify-between items-start flex-col ">
           <h1 className=" mb-2 overflow-ellipsis  mt-6 ml-3 font-semibold text-md ">
             {title ? (
@@ -30,7 +29,7 @@ const SearchCard = ({ title, content, id }) => {
             )}
           </p>
         </Card>
-      </Link>
+      
     </>
   );
 };
