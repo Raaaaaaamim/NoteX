@@ -151,7 +151,7 @@ const Navbar = () => {
           href="/"
           className=" cursor-pointer font-semibold flex-[2] hidden lg:flex "
         >
-          Your Notes
+          All Notes
         </Link>
         <div className=" flex gap-4 justify-end flex-[8]  items-center ">
           <Dialog

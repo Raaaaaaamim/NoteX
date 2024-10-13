@@ -14,6 +14,8 @@ import { Button } from "./ui/button.jsx";
 import { Card } from "./ui/card.jsx";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog.jsx";
 const NoteCard = ({ note, id, date, category, title }) => {
+  console.log(id);
+
   const formattedDate = formatDateTime(date);
   const [notes, setNotes] = useRecoilState(notesState);
   const [groupNotesData, setGroupNotesData] = useRecoilState(groupNotes);
@@ -53,7 +55,7 @@ const NoteCard = ({ note, id, date, category, title }) => {
       <div className=" w-[90%] cursor-pointer h-[20%] flex justify-between items-center ">
         <Link
           href={`/notes/${id}`}
-          className=" cursor-pointer font-roboto_mono text-base "
+          className=" cursor-pointer font-bold font-roboto_mono text-base "
         >
           {title.length > 18 ? title.slice(0, 18) + "..." : title}
         </Link>
@@ -63,7 +65,9 @@ const NoteCard = ({ note, id, date, category, title }) => {
         </Badge>
       </div>
 
-      <h2 className=" h-[60%] overflow-hidden text-sm w-[90%] ">{note}</h2>
+      <h2 className=" h-[60%] font-roboto_mono overflow-hidden text-sm w-[90%] ">
+        {note}
+      </h2>
 
       <div className=" h-[20%] w-[90%] flex justify-between items-center ">
         <span className=" font-roboto_mono font-[500] text-xs  ">

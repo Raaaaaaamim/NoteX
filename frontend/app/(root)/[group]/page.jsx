@@ -1,8 +1,8 @@
 "use client";
 
 import { groupNotes } from "@/app/(states)/groupNotes.js";
-import Loader from "@/components/Loader.jsx";
 import NoteCard from "@/components/NoteCard.jsx";
+import { NotesSkeleton } from "@/components/NotesSkeleton.jsx";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
@@ -30,13 +30,17 @@ const page = ({ params: { group } }) => {
     };
     fetchNotes();
   }, []);
-  console.log(notes, loading);
+  const skeletonsArr = Array(9).fill(0);
 
   return (
     <div className=" lg:w-[80%] overflow-x-hidden w-[100%] flex justify-center items-start -z-10 min-h-[90vh] top-[10vh] absolute right-0 ">
       <div className=" flex mt-8 mb-8 flex-wrap gap-4 items-center justify-center lg:justify-start  w-[95%]  ">
         {loading ? (
-          <Loader />
+          <>
+            {skeletonsArr.map((_, index) => (
+              <NotesSkeleton key={index} />
+            ))}
+          </>
         ) : (
           <>
             {notes &&

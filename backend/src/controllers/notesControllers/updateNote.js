@@ -1,5 +1,5 @@
 import Notes from "../../models/Notes.js";
-import CustomError from "../../utils/customError.js";
+import { CustomError } from "../../utils/helper.js";
 const updateNote = async (req, res, next) => {
   try {
     const { id } = req.params;
