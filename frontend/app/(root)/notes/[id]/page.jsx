@@ -1,5 +1,6 @@
 "use client";
 
+import DeleteConfirmation from "@/components/DeleteConfirmation.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { Card } from "@/components/ui/card.jsx";
 import { Skeleton } from "@/components/ui/skeleton.jsx";
@@ -11,6 +12,7 @@ import {
 } from "@/components/ui/tooltip.jsx";
 import { useToast } from "@/hooks/use-toast.js";
 import axios from "axios";
+import { useRouter } from "next/navigation.js";
 
 import { useEffect, useState } from "react";
 import { FaSave } from "react-icons/fa";
@@ -23,7 +25,7 @@ const page = ({ params: { id } }) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [updateLoading, setUpdateLoading] = useState(false);
-
+  const router = useRouter();
   const [contentEditable, setContentEditable] = useState(true);
   useEffect(() => {
     const fetchNote = async () => {
@@ -45,7 +47,7 @@ const page = ({ params: { id } }) => {
         setLoading(false);
         toast({
           title: "Error while fetching note",
-          description: err.message,
+          description: err?.response?.data?.message || err.message,
         });
         console.log(err.message);
       }
@@ -53,31 +55,7 @@ const page = ({ params: { id } }) => {
 
     fetchNote();
   }, []);
-  const deleteNote = async () => {
-    try {
-      setLoading(true);
-      const { data } = await axios.delete(
-        `http://localhost:5000/api/notes/${id}`,
-        {
-          withCredentials: true,
-        }
-      );
-      setNote(data);
-      setLoading(false);
-      toast({
-        title: "Note Deleted",
-        description: data.message,
-      });
-      console.log(data);
-    } catch (err) {
-      setLoading(false);
-      toast({
-        title: "Error while deleting note",
-        description: err.message,
-      });
-      console.log(err.message);
-    }
-  };
+
   const saveNote = async () => {
     try {
       setUpdateLoading(true);
@@ -106,7 +84,7 @@ const page = ({ params: { id } }) => {
       setUpdateLoading(false);
       toast({
         title: "Error while updating note",
-        description: err.message,
+        description: err?.response?.data?.message || err.message,
       });
       console.log(err.message);
     }
@@ -118,10 +96,9 @@ const page = ({ params: { id } }) => {
     </div>
   ) : (
     note && (
-      <div className=" flex w-[100%] items-center justify-center lg:w-[80%] h-[90vh]  lg:ml-[20%]  ">
-        <Card className=" mt-[20vh]  flex justify-center items-center lg:w-[80%] h-[80%] w-[90%] ">
-          {/* i wanna hide the slider of this div  */}
-          <div className=" h-[80%] scrollbar-hidden flex flex-col gap-3  overflow-auto w-[85%] ">
+      <div className=" flex w-[100%] items-center justify-center lg:w-[80%] h-[90vh]   lg:ml-[20%]  ">
+        <Card className=" mt-[20vh]  flex justify-center items-center lg:w-[80%] h-[80%] w-[90%] flex-col lg:flex-row ">
+          <div className=" h-[80%]  lg:mt-0 mt-10 scrollbar-hidden flex flex-col gap-3  overflow-auto w-[85%] ">
             <textarea
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -133,13 +110,13 @@ const page = ({ params: { id } }) => {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               suppressContentEditableWarning
-              className="mt-4 font-roboto_mono scrollbar-hidden md:text-base text-xm h-[70%] lg:text-base outline-none focus:outline-none resize-none focus:ring-0 bg-transparent focus:border-transparent"
+              className="mt-4 ml-1 font-roboto_mono  scrollbar-hidden md:text-base text-xm lg:h-[70%]  h-[400px] lg:text-base outline-none focus:outline-none resize-none focus:ring-0 bg-transparent focus:border-transparent"
             />
           </div>
-          <div className=" ml-6 h-[80%] flex justify-end items-center flex-col ">
+          <div className=" lg:mt-0   ml-6 h-[80%] flex justify-end items-center lg:flex-col gap-2 ">
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild>
                   <Button
                     onClick={saveNote}
                     className=" mt-5 font-roboto_mono  font-bold"
@@ -153,15 +130,20 @@ const page = ({ params: { id } }) => {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-
-            <Button
-              onClick={deleteNote}
-              className=" mt-5 font-roboto_mono  font-bold"
-              variant="outline"
-              size="icon"
+            <DeleteConfirmation
+              callback={() => {
+                router.push("/");
+              }}
+              id={id}
             >
-              <PiTrashSimpleFill size={20} />
-            </Button>
+              <Button
+                className=" mt-5 font-roboto_mono  font-bold"
+                variant="outline"
+                size="icon"
+              >
+                <PiTrashSimpleFill size={20} />
+              </Button>
+            </DeleteConfirmation>
           </div>
         </Card>
       </div>

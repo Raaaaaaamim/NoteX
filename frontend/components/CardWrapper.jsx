@@ -23,6 +23,7 @@ const CardWrapper = () => {
         );
         setLoading(false);
         console.log(data);
+        console.log(data);
 
         setNotes(data);
       } catch (err) {
@@ -48,8 +49,13 @@ const CardWrapper = () => {
           </>
         ) : (
           <>
-            {!notes ? (
-              <div>No Notes</div>
+            {!notes || notes?.length === 0 ? (
+              <div
+                className=" font-roboto_mono text-2xl
+               font-[500]  "
+              >
+                No Notes
+              </div>
             ) : (
               notes.map((note) => (
                 <>

@@ -18,6 +18,7 @@ const createUser = async (req, res, next) => {
       fullName,
       _id,
     });
+    newUser.password = null;
     createTokenAndSendCookie(_id, res);
     res.status(200).json(newUser);
   } catch (err) {

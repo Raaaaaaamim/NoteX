@@ -10,7 +10,15 @@ import { useToast } from "@/hooks/use-toast";
 import { groupNotes } from "@/app/(states)/groupNotes.js";
 import { notesState } from "@/app/(states)/notesState.js";
 import { reloadState } from "@/app/(states)/reloadState.js";
+import { userState } from "@/app/(states)/userState.js";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { app } from "@/firebase/config.js";
 import axios from "axios";
+import { getAuth, signOut } from "firebase/auth";
 import { Loader, SearchIcon } from "lucide-react";
 import Link from "next/link.js";
 import { useState } from "react";
@@ -24,13 +32,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar.jsx";
 import { Button } from "./ui/button.jsx";
 import { Input } from "./ui/input.jsx";
 import { Textarea } from "./ui/textarea.jsx";
+
 const Navbar = () => {
   const [title, setTitle] = useState(null);
   const [search, setSearch] = useState(null);
   const [loading, setLoading] = useState(false);
   const [groupNotesData, setGroupNotesData] = useRecoilState(groupNotes);
   const [reload, setReload] = useRecoilState(reloadState);
-  const [Notes, setNotes] = useRecoilState(notesState);
+  const [notes, setNotes] = useRecoilState(notesState);
 
   const { toast } = useToast();
   const [searchLoading, setSearchLoading] = useState(false);
@@ -63,7 +72,9 @@ const Navbar = () => {
         }
       );
       setReload(!reload);
-      setNotes([data, ...Notes]);
+      if (notes) {
+        setNotes([data, ...notes]);
+      }
       if (groupNotesData) {
         setGroupNotesData([data, ...groupNotesData]);
       }
@@ -74,8 +85,12 @@ const Navbar = () => {
         description: "Note added successfully",
       });
     } catch (err) {
+      toast({
+        title: "An error occurred",
+        description: err?.response?.data?.message || err.message,
+      });
       setLoading(false);
-      console.log(err.message);
+      console.log(err);
     }
   };
   let timeoutId;
@@ -107,6 +122,10 @@ const Navbar = () => {
           setSearch(data);
         } catch (err) {
           setSearchLoading(false);
+          toast({
+            title: "An error occurred",
+            description: err?.response?.data?.message || err.message,
+          });
           console.log(err.message);
         }
       };
@@ -114,15 +133,46 @@ const Navbar = () => {
       searchNotes();
     }, 500);
   };
+  const [user, setUser] = useRecoilState(userState);
+  const auth = getAuth(app);
+  const logout = async () => {
+    try {
+      const { data } = await axios.delete(
+        "http://localhost:5000/api/user/logout",
+        {
+          withCredentials: true,
+        }
+      );
 
+      await signOut(auth);
+      setUser(null);
+      console.log(data);
+    } catch (err) {
+      console.log(err);
+      toast({
+        title: "An error occurred",
+        description: err?.response?.data?.message || err.message,
+      });
+    }
+  };
   return (
     <div className=" fixed bg-background z-10 border-b-[1px] border-border w-[100%]  h-[10vh] flex justify-between items-center ">
       <div className="  lg:flex flex-[2] justify-center items-center ">
         <div className=" hidden lg:flex gap-2 justify-center items-center ">
-          <Avatar>
-            <AvatarImage src=" https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRND6_DiIRY8CO25H_Er1HPUEL_Ir2C-fzXUg&s " />
-            <AvatarFallback>TR</AvatarFallback>
-          </Avatar>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Avatar variant="outline" className="  cursor-pointer  ">
+                <AvatarImage src=" https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRND6_DiIRY8CO25H_Er1HPUEL_Ir2C-fzXUg&s " />
+                <AvatarFallback>TR</AvatarFallback>
+              </Avatar>
+            </PopoverTrigger>
+            <PopoverContent className=" w-[140px] ">
+              <Button onClick={logout} className=" w-full text-left">
+                Logout
+              </Button>
+            </PopoverContent>
+          </Popover>
+
           <span className=" hidden lg:flex font-[500] ">Tahmid Ramim</span>
         </div>
 
@@ -187,7 +237,9 @@ const Navbar = () => {
                       <Link
                         onClick={handleLinkClick}
                         href={`/notes/${_id}`}
-                        className={` ${i === 0 && "mt-28"} w-full `}
+                        className={` ${
+                          i === 0 && search.length > 4 ? "mt-28" : ""
+                        } w-full `}
                       >
                         <SearchCard
                           index={i}

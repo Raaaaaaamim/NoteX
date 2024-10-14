@@ -6,6 +6,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import SideBtn from "./sidebar-button.jsx";
+import SidebarSkeleton from "./SidebarSkeleton.jsx";
 
 const SideBar = ({ className }) => {
   const [groups, setGroups] = useState(null);
@@ -30,33 +31,33 @@ const SideBar = ({ className }) => {
         setLoading(false);
         toast({
           title: "Error while fetching groups",
-          description: err.message,
+          description: err?.response?.data?.message || err.message,
         });
-        console.log(err.message);
+        console.log(err);
       }
     };
 
     fetchData();
   }, [reload]);
-
+  const skeletonCount = Array(29).fill(0);
   return (
     <div
       className={cn(
-        " hidden w-[20%] fixed left-0 top-[10%] border-r-[1px] border-border lg:flex  items-center flex-col gap-0 h-[90vh]",
+        " hidden w-[20%] fixed  left-0 top-[10%] border-r-[1px] border-border   lg:flex  items-center flex-col gap-0 h-[90vh]",
         className
       )}
     >
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        groups?.map((group) => (
-          <SideBtn
-            key={group.name}
-            text={group.name}
-            itemsCount={group.itemsCount}
-          />
-        ))
-      )}
+      <div className="  w-full relative overflow-auto scrollbar-hidden h-full  lg:flex  items-center flex-col gap-0 ">
+        {loading
+          ? skeletonCount.map(() => <SidebarSkeleton />)
+          : groups?.map((group) => (
+              <SideBtn
+                key={group.name}
+                text={group.name}
+                itemsCount={group.itemsCount}
+              />
+            ))}
+      </div>
     </div>
   );
 };

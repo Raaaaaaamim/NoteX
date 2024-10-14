@@ -5,6 +5,9 @@ const updateNote = async (req, res, next) => {
     const { id } = req.params;
     const { _id: userId } = req.user;
     const { title, content, group } = req.body;
+    if (!title && !content) {
+      return next(new CustomError("Nothing to change ", 404));
+    }
     const note = await Notes.findById(id);
     if (!note) {
       return next(new CustomError("Note not found", 404));
@@ -15,7 +18,10 @@ const updateNote = async (req, res, next) => {
     }
     const updatedNote = await Notes.findByIdAndUpdate(
       id,
-      { title, content, group },
+      {
+        title: title ? title : note.title,
+        content: content ? content : note.content,
+      },
       { new: true }
     );
     res.status(200).json(updatedNote);
