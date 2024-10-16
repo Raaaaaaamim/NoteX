@@ -166,7 +166,9 @@ const Navbar = () => {
                 <AvatarImage
                   src={user?.pfp || "https://github.com/vercel.png"}
                 />
-                <AvatarFallback>{user?.fullName.slice(0, 1)}</AvatarFallback>
+                <AvatarFallback>
+                  {user.fullName ? user?.fullName?.slice(0, 1) : "X"}
+                </AvatarFallback>
               </Avatar>
             </PopoverTrigger>
             <PopoverContent className=" w-[140px] ">
