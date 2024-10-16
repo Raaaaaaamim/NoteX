@@ -193,11 +193,18 @@ const Navbar = () => {
             <div className=" flex w-full  justify-center items-start flex-col ">
               <div className="  lg:hidden flex gap-2 justify-center items-center ">
                 <Avatar className=" cursor-pointer w-8 h-8 ">
-                  <AvatarImage src=" https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRND6_DiIRY8CO25H_Er1HPUEL_Ir2C-fzXUg&s " />
-                  <AvatarFallback>TR</AvatarFallback>
+                  <AvatarImage
+                    src={user?.pfp || "https://github.com/vercel.png"}
+                  />
+                  <AvatarFallback>
+                    {user ? user?.fullName?.slice(0, 1) : "X"}
+                  </AvatarFallback>
                 </Avatar>
 
-                <span className=" text-sm  flex font-[500] ">Tahmid Ramim</span>
+                <span className=" text-sm  flex font-[500] ">
+                  {" "}
+                  {user?.fullName || "No Name"}
+                </span>
                 <Button
                   onClick={logout}
                   size="sm"
