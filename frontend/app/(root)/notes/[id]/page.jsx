@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation.js";
 import { useEffect, useState } from "react";
 import { FaSave } from "react-icons/fa";
 import { PiTrashSimpleFill } from "react-icons/pi";
+export const runtime = "edge";
 
 const page = ({ params: { id } }) => {
   const [note, setNote] = useState(null);
@@ -32,7 +33,7 @@ const page = ({ params: { id } }) => {
       try {
         setLoading(true);
         const { data } = await axios.get(
-          `http://localhost:5000/api/notes/${id}`,
+          `${process.env.NEXT_PUBLIC_API}/notes/${id}`,
           {
             withCredentials: true,
           }
@@ -60,7 +61,7 @@ const page = ({ params: { id } }) => {
     try {
       setUpdateLoading(true);
       const { data } = await axios.put(
-        `http://localhost:5000/api/notes/${id}`,
+        `${process.env.NEXT_PUBLIC_API}/notes/${id}`,
         {
           title,
           content,

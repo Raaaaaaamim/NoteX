@@ -17,7 +17,7 @@ const DeleteConfirmation = ({ children, id, callback = () => {} }) => {
   const deleteNote = async () => {
     try {
       const { data } = await axios.delete(
-        ` http://localhost:5000/api/notes/${id}`,
+        ` ${process.env.NEXT_PUBLIC_API}/notes/${id}`,
         {
           withCredentials: true,
         }

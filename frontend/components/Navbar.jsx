@@ -1,5 +1,4 @@
 "use client";
-
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { RiMenu4Fill } from "react-icons/ri";
 
@@ -50,6 +49,7 @@ const Navbar = () => {
   };
   const [note, setNote] = useState(null);
   const [group, setGroup] = useRecoilState(groupState);
+
   const addNote = async () => {
     if (!group || !title) {
       toast({
@@ -61,7 +61,7 @@ const Navbar = () => {
     try {
       setLoading(true);
       const { data } = await axios.post(
-        "http://localhost:5000/api/notes/new",
+        `${process.env.NEXT_PUBLIC_API}/notes/new`,
         {
           title,
           content: note,
@@ -110,7 +110,7 @@ const Navbar = () => {
         try {
           setSearchLoading(true);
           const { data } = await axios.get(
-            `http://localhost:5000/api/notes/search/${e.target.value}`,
+            `${process.env.NEXT_PUBLIC_API}/notes/search/${e.target.value}`,
 
             {
               withCredentials: true,
@@ -138,7 +138,7 @@ const Navbar = () => {
   const logout = async () => {
     try {
       const { data } = await axios.delete(
-        "http://localhost:5000/api/user/logout",
+        `${process.env.NEXT_PUBLIC_API}/user/logout`,
         {
           withCredentials: true,
         }
@@ -146,6 +146,7 @@ const Navbar = () => {
 
       await signOut(auth);
       setUser(null);
+      localStorage.removeItem("user");
       console.log(data);
     } catch (err) {
       console.log(err);
@@ -156,7 +157,7 @@ const Navbar = () => {
     }
   };
   return (
-    <div className=" fixed bg-background z-10 border-b-[1px] border-border w-[100%]  h-[10vh] flex justify-between items-center ">
+    <nav className=" fixed bg-background z-10 border-b-[1px] border-border w-[100%]  h-[10vh] flex justify-between items-center ">
       <div className="  lg:flex flex-[2] justify-center items-center ">
         <div className=" hidden lg:flex gap-2 justify-center items-center ">
           <Popover>
@@ -189,7 +190,16 @@ const Navbar = () => {
                   <AvatarImage src=" https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRND6_DiIRY8CO25H_Er1HPUEL_Ir2C-fzXUg&s " />
                   <AvatarFallback>TR</AvatarFallback>
                 </Avatar>
+
                 <span className=" text-sm  flex font-[500] ">Tahmid Ramim</span>
+                <Button
+                  onClick={logout}
+                  size="sm"
+                  variant="outline"
+                  className=" ml-3  text-sm w-fit p-2 text-left"
+                >
+                  Logout
+                </Button>
               </div>
               <SideBar className={" flex w-[320px] "} />
             </div>
@@ -288,7 +298,7 @@ const Navbar = () => {
           </Dialog>
         </div>
       </div>
-    </div>
+    </nav>
   );
 };
 

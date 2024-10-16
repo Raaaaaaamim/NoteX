@@ -16,7 +16,7 @@ const CardWrapper = () => {
       try {
         setLoading(true);
         const { data } = await axios.get(
-          "http://localhost:5000/api/notes/all",
+          `${process.env.NEXT_PUBLIC_API}/notes/all`,
           {
             withCredentials: true,
           }

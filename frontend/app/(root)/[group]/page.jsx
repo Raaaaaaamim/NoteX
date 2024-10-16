@@ -6,6 +6,7 @@ import { NotesSkeleton } from "@/components/NotesSkeleton.jsx";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
+export const runtime = "edge";
 
 const page = ({ params: { group } }) => {
   const [notes, setNotes] = useRecoilState(groupNotes);
@@ -15,7 +16,7 @@ const page = ({ params: { group } }) => {
       try {
         setLoading(true);
         const { data } = await axios.post(
-          `http://localhost:5000/api/notes/groups/${group}`,
+          `${process.env.NEXT_PUBLIC_API}/notes/groups/${group}`,
           {},
           {
             withCredentials: true,

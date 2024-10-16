@@ -32,7 +32,7 @@ const AddCategory = () => {
       try {
         setLoading(true);
         const { data } = await axios.get(
-          "http://localhost:5000/api/notes/groups/all",
+          `${process.env.NEXT_PUBLIC_API}/notes/groups/all`,
           {
             withCredentials: true,
           }

@@ -1,16 +1,18 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import { config } from "dotenv";
 import express from "express";
 import errorHandler from "./middlewares/errorHandler.js";
 import notesRouter from "./routes/notes.js";
 import userRouter from "./routes/user.js";
+config();
 
 export const app = express();
 app.use(
   cors({
-    origin: "http://localhost:3000", // Corrected the origin URLs
-    credentials: true, // Allow credentials (cookies)
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE", // Allowed methods
+    origin: process.env.CORS_ORIGIN,
+    credentials: true,
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   })
 );
 

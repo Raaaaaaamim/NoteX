@@ -16,7 +16,7 @@ const SideBtn = ({ className, text, itemsCount }) => {
   const deleteGroup = async () => {
     try {
       const { data } = await axios.delete(
-        `http://localhost:5000/api/notes/groups/${text}`,
+        `${process.env.NEXT_PUBLIC_API}/notes/groups/${text}`,
         {
           withCredentials: true,
         }

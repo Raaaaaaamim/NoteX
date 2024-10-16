@@ -2,5 +2,8 @@ import { atom } from "recoil";
 
 export const userState = atom({
   key: "userState",
-  default: null,
+  default:
+    typeof window !== "undefined" && localStorage.getItem("user")
+      ? JSON.parse(localStorage.getItem("user"))
+      : null,
 });

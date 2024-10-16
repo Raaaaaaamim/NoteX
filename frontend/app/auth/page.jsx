@@ -1,4 +1,5 @@
 "use client";
+
 import { FaGoogle } from "react-icons/fa";
 // firebase
 import { Button } from "@/components/ui/button.jsx";
@@ -10,6 +11,7 @@ import { useState } from "react";
 import { useRecoilState } from "recoil";
 import { userState } from "../(states)/userState.js";
 import { app, provider } from "../../firebase/config.js";
+export const runtime = "edge";
 
 const Auth = () => {
   const auth = getAuth(app);
@@ -27,7 +29,8 @@ const Auth = () => {
         try {
           setLoading(true);
           const { data } = await axios.post(
-            "http://localhost:5000/api/user/create",
+            `${process.env.NEXT_PUBLIC_API}/user/create`,
+
             {
               _id: userInfo.user.uid,
               email: userInfo.user.email,
@@ -37,16 +40,12 @@ const Auth = () => {
             },
             { withCredentials: true }
           );
-          toast({
-            title: "Account Created successfully",
-            description: "Redirecting...",
-            variant: "success",
-          });
+          localStorage.setItem("user", JSON.stringify(data));
           setLoading(false);
 
           setUser(data);
           router.push("/");
-        } catch (error) {
+        } catch (err) {
           setLoading(false);
 
           toast({
@@ -54,15 +53,13 @@ const Auth = () => {
             description: err?.response?.data?.message || err.message,
           });
 
-          window.location.reload();
-
-          console.log(error.message);
+          console.log(err.message);
         }
       } else {
         try {
           setLoading(true);
           const data = await axios.post(
-            "http://localhost:5000/api/user/login",
+            `${process.env.NEXT_PUBLIC_API}/user/login`,
             {
               email: userInfo.user.email,
 
@@ -70,28 +67,25 @@ const Auth = () => {
             },
             { withCredentials: true }
           );
+          localStorage.setItem("user", JSON.stringify(data));
+
           setLoading(false);
           setUser(data);
-          toast({
-            title: " Signed In successfully",
-            description: "Redirecting...",
-            variant: "success",
-          });
+
           router.push("/");
-        } catch (error) {
+        } catch (err) {
           setLoading(false);
 
           toast({
             title: "An error occurred",
             description: err?.response?.data?.message || err.message,
           });
-          window.location.reload();
-          console.log(error);
+          console.log(err);
         }
       }
-    } catch (error) {
+    } catch (err) {
       setLoading(false);
-      console.log(error);
+      console.log(err);
     }
   };
 
