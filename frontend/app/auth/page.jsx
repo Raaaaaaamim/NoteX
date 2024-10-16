@@ -24,6 +24,7 @@ const Auth = () => {
   const authorize = async () => {
     try {
       const userInfo = await signInWithPopup(auth, provider);
+
       if (btnText === "Continue with Google") {
         try {
           setLoading(true);

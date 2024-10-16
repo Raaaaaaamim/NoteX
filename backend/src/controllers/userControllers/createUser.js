@@ -2,7 +2,7 @@ import User from "../../models/User.js";
 import { CustomError, createTokenAndSendCookie } from "../../utils/helper.js";
 const createUser = async (req, res, next) => {
   try {
-    const { email, password, fullName, _id } = req.body;
+    const { email, password, fullName, _id, pfp } = req.body;
 
     if (!email || !password || !fullName || !_id) {
       return next(new CustomError("all fields are required", 400));
@@ -16,6 +16,7 @@ const createUser = async (req, res, next) => {
       email,
       password,
       fullName,
+      pfp,
       _id,
     });
     newUser.password = null;

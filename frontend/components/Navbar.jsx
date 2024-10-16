@@ -163,8 +163,10 @@ const Navbar = () => {
           <Popover>
             <PopoverTrigger asChild>
               <Avatar variant="outline" className="  cursor-pointer  ">
-                <AvatarImage src=" https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRND6_DiIRY8CO25H_Er1HPUEL_Ir2C-fzXUg&s " />
-                <AvatarFallback>TR</AvatarFallback>
+                <AvatarImage
+                  src={user?.pfp || "https://github.com/vercel.png"}
+                />
+                <AvatarFallback>{user?.fullName.slice(0, 1)}</AvatarFallback>
               </Avatar>
             </PopoverTrigger>
             <PopoverContent className=" w-[140px] ">
@@ -174,7 +176,9 @@ const Navbar = () => {
             </PopoverContent>
           </Popover>
 
-          <span className=" hidden lg:flex font-[500] ">Tahmid Ramim</span>
+          <span className=" hidden lg:flex font-[500] ">
+            {user?.fullName || "No Name"}
+          </span>
         </div>
 
         <Sheet>

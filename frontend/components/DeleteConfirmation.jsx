@@ -45,8 +45,8 @@ const DeleteConfirmation = ({ children, id, callback = () => {} }) => {
   return (
     <Dialog>
       <DialogTrigger>{children}</DialogTrigger>
-      <DialogContent className=" overflow-hidden w-[400px] lg:w-full rounded-md ">
-        <div className=" flex flex-col justify-center items-center">
+      <DialogContent className=" overflow-hidden w-[300px] lg:w-full rounded-md ">
+        <div className=" flex flex-col  justify-center items-center">
           <h1 className=" text-center  font-roboto_mono font-[600]">
             Are you sure you want to delete this note?
           </h1>

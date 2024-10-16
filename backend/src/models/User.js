@@ -20,6 +20,7 @@ const userSchema = new Schema(
     },
     pfp: {
       type: String,
+      required: [true, "Pfp is required "],
     },
     notes: {
       type: [mongoose.Schema.Types.ObjectId],
