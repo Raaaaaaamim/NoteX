@@ -10,7 +10,7 @@ config();
 export const app = express();
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: process.env.CORS_ORIGIN.split(","),
     credentials: true,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   })
