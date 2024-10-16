@@ -118,6 +118,7 @@ const page = ({ params: { id } }) => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
+                    isLoading={updateLoading}
                     onClick={saveNote}
                     className=" mt-5 font-roboto_mono  font-bold"
                     size="icon"

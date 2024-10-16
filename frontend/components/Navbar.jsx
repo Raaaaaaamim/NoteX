@@ -20,7 +20,7 @@ import axios from "axios";
 import { getAuth, signOut } from "firebase/auth";
 import { Loader, SearchIcon } from "lucide-react";
 import Link from "next/link.js";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { useRecoilState } from "recoil";
 import AddCategory from "./AddCategory.jsx";
@@ -43,6 +43,7 @@ const Navbar = () => {
   const { toast } = useToast();
   const [searchLoading, setSearchLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [user, setUser] = useRecoilState(userState);
 
   const handleLinkClick = () => {
     setIsDialogOpen(false); // This will close the dialog
@@ -133,7 +134,6 @@ const Navbar = () => {
       searchNotes();
     }, 500);
   };
-  const [user, setUser] = useRecoilState(userState);
   const auth = getAuth(app);
   const logout = async () => {
     try {
@@ -156,161 +156,176 @@ const Navbar = () => {
       });
     }
   };
+  const [isLoaded, setIsLoaded] = useState(false); // Track when user is loaded
+
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser) {
+      setUser(storedUser);
+    }
+    setIsLoaded(true); // Now that user is loaded, mark it
+    console.log(user);
+  }, []);
   return (
     <nav className=" fixed bg-background z-10 border-b-[1px] border-border w-[100%]  h-[10vh] flex justify-between items-center ">
-      <div className="  lg:flex flex-[2] justify-center items-center ">
-        <div className=" hidden lg:flex gap-2 justify-center items-center ">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Avatar variant="outline" className="  cursor-pointer  ">
-                <AvatarImage
-                  src={user?.pfp || "https://github.com/vercel.png"}
-                />
-                <AvatarFallback>
-                  {user ? user?.fullName?.slice(0, 1) : "X"}
-                </AvatarFallback>
-              </Avatar>
-            </PopoverTrigger>
-            <PopoverContent className=" w-[140px] ">
-              <Button onClick={logout} className=" w-full text-left">
-                Logout
-              </Button>
-            </PopoverContent>
-          </Popover>
+      {isLoaded ? (
+        <>
+          <div className="  lg:flex flex-[2] justify-center items-center ">
+            <div className=" hidden lg:flex gap-2 justify-center items-center ">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Avatar variant="outline" className="  cursor-pointer  ">
+                    <AvatarImage
+                      src={user?.data?.pfp || "https://github.com/vercel.png"}
+                    />
+                    <AvatarFallback>
+                      {user ? user?.fullName?.slice(0, 1) : "X"}
+                    </AvatarFallback>
+                  </Avatar>
+                </PopoverTrigger>
+                <PopoverContent className=" w-[140px] ">
+                  <Button onClick={logout} className=" w-full text-left">
+                    Logout
+                  </Button>
+                </PopoverContent>
+              </Popover>
 
-          <span className=" hidden lg:flex font-[500] ">
-            {user?.fullName || "No Name"}
-          </span>
-        </div>
-
-        <Sheet>
-          <SheetTrigger className=" cursor-pointer " asChild>
-            <div className=" flex justify-center items-center lg:hidden ">
-              <RiMenu4Fill size={22} />
+              <span className=" hidden lg:flex font-[500] ">
+                {user?.data?.fullName || "No Name"}
+              </span>
             </div>
-          </SheetTrigger>
-          <SheetContent side="left" className=" w-[320px]   ">
-            <div className=" flex w-full  justify-center items-start flex-col ">
-              <div className="  lg:hidden flex gap-2 justify-center items-center ">
-                <Avatar className=" cursor-pointer w-8 h-8 ">
-                  <AvatarImage
-                    src={user?.pfp || "https://github.com/vercel.png"}
-                  />
-                  <AvatarFallback>
-                    {user ? user?.fullName?.slice(0, 1) : "X"}
-                  </AvatarFallback>
-                </Avatar>
 
-                <span className=" text-sm  flex font-[500] ">
-                  {" "}
-                  {user?.fullName || "No Name"}
-                </span>
-                <Button
-                  onClick={logout}
-                  size="sm"
-                  variant="outline"
-                  className=" ml-3  text-sm w-fit p-2 text-left"
-                >
-                  Logout
-                </Button>
-              </div>
-              <SideBar className={" flex w-[320px] "} />
-            </div>
-          </SheetContent>
-        </Sheet>
-      </div>
-      <div className=" flex justify-between flex-[8] items-center  ">
-        <Link
-          href="/"
-          className=" cursor-pointer font-semibold flex-[2] hidden lg:flex "
-        >
-          All Notes
-        </Link>
-        <div className=" flex gap-4 justify-end flex-[8]  items-center ">
-          <Dialog
-            open={isDialogOpen}
-            onOpenChange={setIsDialogOpen}
-            className="  "
-          >
-            <DialogTrigger asChild>
-              <Button variant="outline" size="icon">
-                <CiSearch size={20} />
-              </Button>
-            </DialogTrigger>
-            <DialogContent className=" w-[350px] max-h-[90vh] overflow-auto flex justify-center items-center flex-col rounded-[1rem] lg:w-full ">
-              <div className=" gap-0 w-full flex justify-center items-center  ">
-                <SearchIcon className=" scale-[0.75] text-xl text-foreground" />
-                <Input
-                  className=" h-4 pt-4  text-sm px-1 py-0 font-[600] border-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0  "
-                  placeholder="Type here to Search..."
-                  onChange={searchInNotesDebounce}
-                />
-              </div>
-              <div className=" w-full h-[1px] bg-border "></div>
-              <div className="  justify-center items-center overflow-auto max-h-[90%] w-full flex flex-col gap-2 ">
-                {searchLoading ? (
-                  <Loader />
-                ) : (
-                  search &&
-                  search.map(({ _id, matches: { title, content } }, i) => {
-                    const modifiedTitle = title ? title.context : null;
-                    const modifiedContent = content ? content.context : null;
+            <Sheet>
+              <SheetTrigger className=" cursor-pointer " asChild>
+                <div className=" flex justify-center items-center lg:hidden ">
+                  <RiMenu4Fill size={22} />
+                </div>
+              </SheetTrigger>
+              <SheetContent side="left" className=" w-[320px]   ">
+                <div className=" flex w-full  justify-center items-start flex-col ">
+                  <div className="  lg:hidden flex gap-2 justify-center items-center ">
+                    <Avatar className=" cursor-pointer w-8 h-8 ">
+                      <AvatarImage
+                        src={user?.data?.pfp || "https://github.com/vercel.png"}
+                      />
+                      <AvatarFallback>
+                        {user ? user?.data?.fullName?.slice(0, 1) : "X"}
+                      </AvatarFallback>
+                    </Avatar>
 
-                    return (
-                      <Link
-                        onClick={handleLinkClick}
-                        href={`/notes/${_id}`}
-                        className={` ${
-                          i === 0 && search.length > 4 ? "mt-28" : ""
-                        } w-full `}
-                      >
-                        <SearchCard
-                          index={i}
-                          title={modifiedTitle}
-                          key={_id}
-                          id={_id}
-                          content={modifiedContent}
-                        />
-                      </Link>
-                    );
-                  })
-                )}
-              </div>
-            </DialogContent>
-          </Dialog>
-
-          <ModeToggle />
-
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className=" mr-4 ">Add Note</Button>
-            </DialogTrigger>
-            <DialogContent className="  w-[350px] rounded-lg lg:w-full">
-              <Input
-                className=" text-xl font-[600] border-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0  "
-                placeholder="Title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-              <Textarea
-                className=" text-sm  border-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0  "
-                placeholder="Note"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-              />
-              <AddCategory />
-              <Button
-                isLoading={loading}
-                disabled={loading}
-                onClick={addNote}
-                className=" ml-4 "
+                    <span className=" text-sm  flex font-[500] ">
+                      {user?.data?.fullName || "No Name"}
+                    </span>
+                    <Button
+                      onClick={logout}
+                      size="sm"
+                      variant="outline"
+                      className=" ml-3  text-sm w-fit p-2 text-left"
+                    >
+                      Logout
+                    </Button>
+                  </div>
+                  <SideBar className={" flex w-[320px] "} />
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+          <div className=" flex justify-between flex-[8] items-center  ">
+            <Link
+              href="/"
+              className=" cursor-pointer font-semibold flex-[2] hidden lg:flex "
+            >
+              All Notes
+            </Link>
+            <div className=" flex gap-4 justify-end flex-[8]  items-center ">
+              <Dialog
+                open={isDialogOpen}
+                onOpenChange={setIsDialogOpen}
+                className="  "
               >
-                Add Note
-              </Button>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </div>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <CiSearch size={20} />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className=" w-[350px] max-h-[90vh] overflow-auto flex justify-center items-center flex-col rounded-[1rem] lg:w-full ">
+                  <div className=" gap-0 w-full flex justify-center items-center  ">
+                    <SearchIcon className=" scale-[0.75] text-xl text-foreground" />
+                    <Input
+                      className=" h-4 pt-4  text-sm px-1 py-0 font-[600] border-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0  "
+                      placeholder="Type here to Search..."
+                      onChange={searchInNotesDebounce}
+                    />
+                  </div>
+                  <div className=" w-full h-[1px] bg-border "></div>
+                  <div className="  justify-center items-center overflow-auto max-h-[90%] w-full flex flex-col gap-2 ">
+                    {searchLoading ? (
+                      <Loader />
+                    ) : (
+                      search &&
+                      search.map(({ _id, matches: { title, content } }, i) => {
+                        const modifiedTitle = title ? title.context : null;
+                        const modifiedContent = content
+                          ? content.context
+                          : null;
+
+                        return (
+                          <Link
+                            onClick={handleLinkClick}
+                            href={`/notes/${_id}`}
+                            className={` ${
+                              i === 0 && search.length > 4 ? "mt-28" : ""
+                            } w-full `}
+                          >
+                            <SearchCard
+                              index={i}
+                              title={modifiedTitle}
+                              key={_id}
+                              id={_id}
+                              content={modifiedContent}
+                            />
+                          </Link>
+                        );
+                      })
+                    )}
+                  </div>
+                </DialogContent>
+              </Dialog>
+
+              <ModeToggle />
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className=" mr-4 ">Add Note</Button>
+                </DialogTrigger>
+                <DialogContent className="  w-[350px] rounded-lg lg:w-full">
+                  <Input
+                    className=" text-xl font-[600] border-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0  "
+                    placeholder="Title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                  />
+                  <Textarea
+                    className=" text-sm  border-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0  "
+                    placeholder="Note"
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                  />
+                  <AddCategory />
+                  <Button
+                    isLoading={loading}
+                    disabled={loading}
+                    onClick={addNote}
+                    className=" ml-4 "
+                  >
+                    Add Note
+                  </Button>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
+        </>
+      ) : null}
     </nav>
   );
 };
