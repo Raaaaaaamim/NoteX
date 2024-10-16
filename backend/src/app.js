@@ -21,6 +21,7 @@ app.use(
   })
 );
 
+app.options("*", cors());
 
 app.use(cookieParser());
 app.use(express.json({ limit: "50mb" }));
