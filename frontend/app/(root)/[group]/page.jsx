@@ -6,7 +6,6 @@ import { NotesSkeleton } from "@/components/NotesSkeleton.jsx";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-export const runtime = "edge";
 
 const page = ({ params: { group } }) => {
   const [notes, setNotes] = useRecoilState(groupNotes);

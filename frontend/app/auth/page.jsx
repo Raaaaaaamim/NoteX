@@ -11,7 +11,6 @@ import { useState } from "react";
 import { useRecoilState } from "recoil";
 import { userState } from "../(states)/userState.js";
 import { app, provider } from "../../firebase/config.js";
-export const runtime = "edge";
 
 const Auth = () => {
   const auth = getAuth(app);

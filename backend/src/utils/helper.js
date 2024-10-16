@@ -15,8 +15,9 @@ export function createTokenAndSendCookie(id, res) {
   // Set cookie with appropriate flags
   res.cookie("token", token, {
     httpOnly: true,
-    sameSite: "lax",
-    maxAge: 1000 * 60 * 60 * 24 * 15,
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
   });
 }
 export const getHighlightedText = (text, query) => {
