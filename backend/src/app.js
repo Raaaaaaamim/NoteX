@@ -11,13 +11,16 @@ export const app = express();
 app.use(
   cors({
     origin: [
-      "https://notex-ramim.vercel.app/",
-      "https://note-x-git-main-raaaaaaamims-projects.vercel.app/",
+      "https://notex-ramim.vercel.app",
+      "https://note-x-git-main-raaaaaaamims-projects.vercel.app",
     ],
     credentials: true,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    allowedHeaders: ["Content-Type", "Authorization"], // Allow custom headers
+    preflightContinue: false,
   })
 );
+
 
 app.use(cookieParser());
 app.use(express.json({ limit: "50mb" }));
