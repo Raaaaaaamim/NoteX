@@ -28,7 +28,7 @@ const Auth = () => {
       if (btnText === "Continue with Google") {
         try {
           setLoading(true);
-          const { data } = await axios.post(
+          const data = await axios.post(
             `${process.env.NEXT_PUBLIC_API}/user/create`,
 
             {
