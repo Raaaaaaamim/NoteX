@@ -8,8 +8,8 @@
     "mongoose": "^8.4.3"
   },
   "scripts": {
-    "start": "node server.js && set NODE_ENV=production",
-    "dev": "node --watch server.js && set NODE_ENV=development"
+    "start": "node server.js ",
+    "dev": "node --watch server.js"
   },
   "name": "backend",
   "type": "module",

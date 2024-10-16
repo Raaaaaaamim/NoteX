@@ -10,7 +10,10 @@ config();
 export const app = express();
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN.split(","),
+    origin: [
+      "https://notex-ramim.vercel.app/",
+      "https://note-x-git-main-raaaaaaamims-projects.vercel.app/",
+    ],
     credentials: true,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   })
