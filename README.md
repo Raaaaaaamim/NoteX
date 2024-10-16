@@ -52,6 +52,6 @@ Here’s a list of key dependencies that power the NoteX app:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/NoteX.git
+   git clone https://github.com/Raaaaaaamim/NoteX.git
    cd NoteX/frontend
    ```
