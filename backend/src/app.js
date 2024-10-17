@@ -28,6 +28,9 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
 app.use("/api/user", userRouter);
 app.use("/api/notes", notesRouter);
 
