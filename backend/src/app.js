@@ -10,10 +10,7 @@ config();
 export const app = express();
 app.use(
   cors({
-    origin: [
-      "https://notex-ramim.vercel.app",
-      "https://note-x-git-main-raaaaaaamims-projects.vercel.app",
-    ],
+    origin: "*",
     credentials: true,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     allowedHeaders: ["Content-Type", "Authorization"], // Allow custom headers
